@@ -2,7 +2,7 @@
 FROM python:3.13.11-slim
 
 # copying the uv binary to the container
-COPY --form=ghcr.io/astral-sh/uv:latest /uv /bin/
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
 
 # working directory inside our container
 WORKDIR /app

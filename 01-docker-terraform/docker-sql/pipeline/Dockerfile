@@ -5,10 +5,10 @@ FROM python:3.13.11-slim
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
 
 # working directory inside our container
-WORKDIR /app
+WORKDIR /code
 
 # adding the venv to PATH
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/code/.venv/bin:$PATH"
 
 # copying dependency files 
 COPY "pyproject.toml" "uv.lock" ".python-version" ./
@@ -17,7 +17,7 @@ COPY "pyproject.toml" "uv.lock" ".python-version" ./
 RUN uv sync --locked
 
 # copying our necessary python code files
-COPY pipeline.py pipeline.py
+COPY ingest_data.py ingest_data.py
 
 # the command that will execute when the container runs
-ENTRYPOINT ["python","pipeline.py"]
+ENTRYPOINT ["python","ingest_data.py"]

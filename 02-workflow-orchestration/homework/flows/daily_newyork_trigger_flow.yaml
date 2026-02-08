@@ -1,0 +1,14 @@
+id: daily_newyork_trigger_flow
+namespace: zoomcamp
+description: A flow that triggers daily at New York timezone
+
+tasks:
+  - id: trigger_done
+    type: io.kestra.plugin.core.log.Log
+    message: "Trigger done at New York timezone: {{(trigger.date ?? execution.startDate) | date('yyyy-MM-dd HH:mm:ss', 'America/New_York')}}"
+
+triggers:
+  - id: daily
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "@daily"
+    timezone: America/New_York

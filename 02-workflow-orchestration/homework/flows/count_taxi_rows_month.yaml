@@ -1,0 +1,58 @@
+id: count_taxi_rows_month
+namespace: zoomcamp
+description: Count the number of rows for a given taxi type, year, and month using DuckDB
+
+inputs:
+  - id: taxi
+    type: SELECT
+    displayName: Select taxi type
+    values: [yellow, green]
+    defaults: yellow
+
+  - id: year
+    type: SELECT
+    displayName: Select year
+    values: ["2019", "2020", "2021"]
+    defaults: "2020"
+
+  - id: month
+    type: SELECT
+    displayName: Select month
+    values: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    defaults: "01"
+
+tasks:
+  - id: count_rows
+    type: io.kestra.plugin.scripts.python.Script
+    beforeCommands:
+      - pip install duckdb kestra
+    env:
+      TAXI: "{{inputs.taxi}}"
+      YEAR: "{{inputs.year}}"
+      MONTH: "{{inputs.month}}"
+    script: |
+        import duckdb
+        import os
+        import urllib.request
+        import gzip
+        import shutil
+        from kestra import Kestra
+
+        taxi = os.environ.get('TAXI')
+        year = os.environ.get('YEAR')
+        month = os.environ.get('MONTH')
+        
+        url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{taxi}/{taxi}_tripdata_{year}-{month}.csv.gz"
+        
+        urllib.request.urlretrieve(url, "data.csv.gz")
+        
+        with gzip.open("data.csv.gz", "rb") as f_in:
+            with open("data.csv", "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        
+        con = duckdb.connect(database=':memory:')
+        count = con.execute("SELECT COUNT(*) FROM read_csv_auto('data.csv')").fetchone()[0]
+        con.close()
+        
+        print(f"Total rows for {taxi} {year}-{month}: {count}")
+        Kestra.outputs({'row_count': count})

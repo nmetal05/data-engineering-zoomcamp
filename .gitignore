@@ -208,3 +208,9 @@ __marimo__/
 # parquets
 *.parquet
 
+
+.bruin.yml
+logs/queries
+logs/runs
+logs/*.log
+*.py[cod]

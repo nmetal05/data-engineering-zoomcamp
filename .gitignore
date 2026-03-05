@@ -214,3 +214,4 @@ logs/queries
 logs/runs
 logs/*.log
 *.py[cod]
+duckdb.db
